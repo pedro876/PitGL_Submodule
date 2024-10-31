@@ -69,7 +69,7 @@ namespace PitGL
 
         [Header("NOISE")]
         public NoiseTechnique noiseTechnique = NoiseTechnique.InterleavedGradientNoise;
-        [ForceAsset("PitGL/Content/NoiseTextures/BlueNoise/32x32/LDR_RG01_Atlas_32x32.png")] public Texture2D blueNoiseAtlas;
+        [ForceAsset("Content/NoiseTextures/BlueNoise/32x32/LDR_RG01_Atlas_32x32.png")] public Texture2D blueNoiseAtlas;
         [Resettable(20.94f)] public float noiseDepthVariation = 20.94f;
         public const int blueNoiseAtlasRows = 8;
         public const int blueNoiseAtlasColumns = 8;

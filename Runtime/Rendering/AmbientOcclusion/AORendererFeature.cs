@@ -28,7 +28,7 @@ namespace PitGL
             instance.Create();
         }
 
-        [SerializeField, ForceAsset("PitGL/Runtime/Rendering/AmbientOcclusion/AOMaterial.mat")] Material material;
+        [SerializeField, ForceAsset("Runtime/Rendering/AmbientOcclusion/AOMaterial.mat")] Material material;
         [SerializeField] bool enabled = true;
         [SerializeField] bool isRendererDeferred = false;
         [SerializeField] DebugView viewResults = DebugView.Off;
