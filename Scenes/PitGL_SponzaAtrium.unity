@@ -164,80 +164,138 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   boneMeshFilter: {fileID: -5754084199372789682, guid: 01970508dac9b0d4686868ac502cf3b7, type: 3}
-  minBoneLength: 0.25
+  minBoneLength: 0.1
   defaultJointRadius: 0.1
+  maxSkeletonDepth: 5
   rigRoot: {fileID: 1449635924}
   bones:
   - joint0: {fileID: 1449635925}
+    joint1: {fileID: 1449635945}
+    depth: 0
+  - joint0: {fileID: 1449635945}
     joint1: {fileID: 1449635927}
+    depth: 1
   - joint0: {fileID: 1449635927}
+    joint1: {fileID: 1449635944}
+    depth: 2
+  - joint0: {fileID: 1449635944}
+    joint1: {fileID: 1449635943}
+    depth: 3
+  - joint0: {fileID: 1449635943}
     joint1: {fileID: 1449635930}
+    depth: 4
   - joint0: {fileID: 1449635930}
     joint1: {fileID: 1449635931}
+    depth: 5
   - joint0: {fileID: 1449635927}
+    joint1: {fileID: 1449635942}
+    depth: 2
+  - joint0: {fileID: 1449635942}
     joint1: {fileID: 1449635953}
+    depth: 3
+  - joint0: {fileID: 1449635953}
+    joint1: {fileID: 1449635941}
+    depth: 4
   - joint0: {fileID: 1449635927}
+    joint1: {fileID: 1449635940}
+    depth: 2
+  - joint0: {fileID: 1449635940}
+    joint1: {fileID: 1449635939}
+    depth: 3
+  - joint0: {fileID: 1449635939}
     joint1: {fileID: 1449635957}
+    depth: 4
   - joint0: {fileID: 1449635957}
     joint1: {fileID: 1449635958}
+    depth: 5
   - joint0: {fileID: 1449635979}
     joint1: {fileID: 1449635980}
+    depth: 0
   - joint0: {fileID: 1449635980}
     joint1: {fileID: 1449635981}
+    depth: 1
   - joint0: {fileID: 1449635981}
-    joint1: {fileID: 1449635983}
+    joint1: {fileID: 1449635938}
+    depth: 2
   - joint0: {fileID: 1449635984}
     joint1: {fileID: 1449635985}
+    depth: 0
   - joint0: {fileID: 1449635985}
     joint1: {fileID: 1449635986}
+    depth: 1
   - joint0: {fileID: 1449635986}
-    joint1: {fileID: 1449635988}
+    joint1: {fileID: 1449635937}
+    depth: 2
   joints:
   - transform: {fileID: 1449635925}
     displacement: {x: 0, y: 0, z: 0}
-    radius: 0.17
+    radius: 0.1
+  - transform: {fileID: 1449635945}
+    displacement: {x: 0, y: 0, z: 0}
+    radius: 0.1
   - transform: {fileID: 1449635927}
-    displacement: {x: 0, y: 0.07, z: 0.06}
-    radius: 0.14
+    displacement: {x: 0, y: 0, z: 0}
+    radius: 0.1
+  - transform: {fileID: 1449635944}
+    displacement: {x: 0, y: 0, z: 0}
+    radius: 0.1
+  - transform: {fileID: 1449635943}
+    displacement: {x: 0, y: 0, z: 0}
+    radius: 0.1
   - transform: {fileID: 1449635930}
     displacement: {x: 0, y: 0, z: 0}
-    radius: 0.07
+    radius: 0.1
   - transform: {fileID: 1449635931}
-    displacement: {x: 0, y: 0.1, z: 0}
-    radius: 0.05
+    displacement: {x: 0, y: 0, z: 0}
+    radius: 0.1
+  - transform: {fileID: 1449635942}
+    displacement: {x: 0, y: 0, z: 0}
+    radius: 0.1
   - transform: {fileID: 1449635953}
-    displacement: {x: 0, y: 0.09, z: 0}
+    displacement: {x: 0, y: 0, z: 0}
+    radius: 0.1
+  - transform: {fileID: 1449635941}
+    displacement: {x: 0, y: 0, z: 0}
+    radius: 0.1
+  - transform: {fileID: 1449635940}
+    displacement: {x: 0, y: 0, z: 0}
+    radius: 0.1
+  - transform: {fileID: 1449635939}
+    displacement: {x: 0, y: 0, z: 0}
     radius: 0.1
   - transform: {fileID: 1449635957}
     displacement: {x: 0, y: 0, z: 0}
-    radius: 0.07
+    radius: 0.1
   - transform: {fileID: 1449635958}
-    displacement: {x: 0, y: 0.1, z: 0}
-    radius: 0.05
+    displacement: {x: 0, y: 0, z: 0}
+    radius: 0.1
   - transform: {fileID: 1449635979}
     displacement: {x: 0, y: 0, z: 0}
-    radius: 0.12
+    radius: 0.1
   - transform: {fileID: 1449635980}
     displacement: {x: 0, y: 0, z: 0}
-    radius: 0.07
+    radius: 0.1
   - transform: {fileID: 1449635981}
-    displacement: {x: 0, y: 0.03, z: -0.04}
-    radius: 0.07
+    displacement: {x: 0, y: 0, z: 0}
+    radius: 0.1
+  - transform: {fileID: 1449635938}
+    displacement: {x: 0, y: 0, z: 0}
+    radius: 0.1
   - transform: {fileID: 1449635983}
-    displacement: {x: 0, y: -0.06, z: -0.01}
-    radius: 0.05
+    displacement: {x: 0, y: 0, z: 0}
+    radius: 0.1
   - transform: {fileID: 1449635984}
     displacement: {x: 0, y: 0, z: 0}
     radius: 0.1
   - transform: {fileID: 1449635985}
     displacement: {x: 0, y: 0, z: 0}
-    radius: 0.07
+    radius: 0.1
   - transform: {fileID: 1449635986}
-    displacement: {x: 0, y: 0.03, z: -0.04}
-    radius: 0.07
-  - transform: {fileID: 1449635988}
-    displacement: {x: 0, y: -0.06, z: -0.01}
-    radius: 0.05
+    displacement: {x: 0, y: 0, z: 0}
+    radius: 0.1
+  - transform: {fileID: 1449635937}
+    displacement: {x: 0, y: 0, z: 0}
+    radius: 0.1
 --- !u!1 &336620034
 GameObject:
   m_ObjectHideFlags: 0
@@ -931,6 +989,51 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 1852576806548013000, guid: b1ba0c079b3553441bd46972fae8288b, type: 3}
   m_PrefabInstance: {fileID: 1449635922}
   m_PrefabAsset: {fileID: 0}
+--- !u!4 &1449635937 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -2770666803903516498, guid: b1ba0c079b3553441bd46972fae8288b, type: 3}
+  m_PrefabInstance: {fileID: 1449635922}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &1449635938 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 2916570863362053800, guid: b1ba0c079b3553441bd46972fae8288b, type: 3}
+  m_PrefabInstance: {fileID: 1449635922}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &1449635939 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -3432401550182100168, guid: b1ba0c079b3553441bd46972fae8288b, type: 3}
+  m_PrefabInstance: {fileID: 1449635922}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &1449635940 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -6803169544883306252, guid: b1ba0c079b3553441bd46972fae8288b, type: 3}
+  m_PrefabInstance: {fileID: 1449635922}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &1449635941 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 8700783698680967558, guid: b1ba0c079b3553441bd46972fae8288b, type: 3}
+  m_PrefabInstance: {fileID: 1449635922}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &1449635942 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 6515712193588681746, guid: b1ba0c079b3553441bd46972fae8288b, type: 3}
+  m_PrefabInstance: {fileID: 1449635922}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &1449635943 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 6000407479487422213, guid: b1ba0c079b3553441bd46972fae8288b, type: 3}
+  m_PrefabInstance: {fileID: 1449635922}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &1449635944 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 7078722787440015773, guid: b1ba0c079b3553441bd46972fae8288b, type: 3}
+  m_PrefabInstance: {fileID: 1449635922}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &1449635945 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -8021001004253913084, guid: b1ba0c079b3553441bd46972fae8288b, type: 3}
+  m_PrefabInstance: {fileID: 1449635922}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &1449635953 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -3321919801592875672, guid: b1ba0c079b3553441bd46972fae8288b, type: 3}
@@ -979,11 +1082,6 @@ Transform:
 --- !u!4 &1449635986 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -6874584590210671055, guid: b1ba0c079b3553441bd46972fae8288b, type: 3}
-  m_PrefabInstance: {fileID: 1449635922}
-  m_PrefabAsset: {fileID: 0}
---- !u!4 &1449635988 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 4042427859692680568, guid: b1ba0c079b3553441bd46972fae8288b, type: 3}
   m_PrefabInstance: {fileID: 1449635922}
   m_PrefabAsset: {fileID: 0}
 --- !u!1 &1616507391

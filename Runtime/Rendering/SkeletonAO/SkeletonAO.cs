@@ -2,6 +2,7 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UIElements;
+using UnityEditor;
 
 namespace PitGL
 {
@@ -12,6 +13,7 @@ namespace PitGL
         {
             public Transform joint0;
             public Transform joint1;
+            public int depth;
         }
 
         [System.Serializable]
@@ -26,9 +28,10 @@ namespace PitGL
 
         [SerializeField] float minBoneLength = 0.1f;
         [SerializeField] float defaultJointRadius = 0.1f;
+        [SerializeField] int maxSkeletonDepth = 10;
         [SerializeField] Transform rigRoot;
-        [SerializeField] Bone[] bones;
-        [SerializeField] Joint[] joints;
+        [SerializeField, HideInInspector] Bone[] bones;
+        [SerializeField, HideInInspector] Joint[] joints;
 
         private Mesh skeletonMesh;
 
@@ -56,7 +59,9 @@ namespace PitGL
             {
                 for (int i = 0; i < joints.Length; i++)
                 {
-                    dict.Add(joints[i].transform, joints[i]);
+                    if (joints[i] == null) continue;
+                    if (joints[i].transform == null) continue;
+                    dict[joints[i].transform] = joints[i];
                 }
             }
             
@@ -117,28 +122,31 @@ namespace PitGL
             {
                 for (int i = 0; i < joints.Length; i++)
                 {
-                    jointsDict.Add(joints[i].transform, joints[i]);
+                    if (joints[i] == null) continue;
+                    if (joints[i].transform == null) continue;
+                    jointsDict[joints[i].transform] = joints[i];
                 }
             }
 
             Transform t = rigRoot;
 
-            var candidates = new Stack<(Transform, Transform)>();
+            var candidates = new Stack<(Transform, Transform, int)>();
 
             int childCount = t.childCount;
             for (int i = 0; i < childCount; i++)
             {
-                candidates.Push((t.GetChild(i), null));
+                candidates.Push((t.GetChild(i), null, 0));
             }
 
             while (candidates.Count > 0)
             {
-                (Transform joint0, Transform joint1) = candidates.Pop();
+                (Transform joint0, Transform joint1, int depth) = candidates.Pop();
+                if (depth > maxSkeletonDepth) continue;
                 if(joint1 == null)
                 {
                     for (int i = 0; i < joint0.childCount; i++)
                     {
-                        candidates.Push((joint0, joint0.GetChild(i)));
+                        candidates.Push((joint0, joint0.GetChild(i), depth));
                     }
                 }
                 else
@@ -151,19 +159,21 @@ namespace PitGL
                         {
                             joint0 = joint0,
                             joint1 = joint1,
+                            depth = depth,
                         };
                         boneList.Add(bone);
                         if (!jointsDict.ContainsKey(joint0)) jointsDict.Add(joint0, new Joint() { transform = joint0, displacement = Vector3.zero, radius = defaultJointRadius});
                         if (!jointsDict.ContainsKey(joint1)) jointsDict.Add(joint1, new Joint() { transform = joint1, displacement = Vector3.zero, radius = defaultJointRadius});
-                        candidates.Push((joint1, null));
+                        candidates.Push((joint1, null, depth + 1));
                     }
                     else
                     {
                         //Skip joint1 and select its children as next candidates for joint0
-                        for (int i = 0; i < joint1.childCount; i++)
-                        {
-                            candidates.Push((joint0, joint1.GetChild(i)));
-                        }
+                        //for (int i = 0; i < joint1.childCount; i++)
+                        //{
+                        //    candidates.Push((joint0, joint1.GetChild(i)));
+                        //}
+                        candidates.Push((joint1, null, depth + 1));
                     }
                 }
             }
@@ -265,5 +275,119 @@ namespace PitGL
             skeletonMesh.CombineMeshes(instances, true, false, false);
             skeletonMesh.RecalculateBounds();
         }
+
+        [ContextMenu("Clear skeleton mesh")]
+        private void ClearSkeletonMesh()
+        {
+            if(skeletonMesh != null)
+            {
+                DestroyImmediate(skeletonMesh);
+                skeletonMesh = null;
+            }
+            
+        }
     }
+
+#if UNITY_EDITOR
+    [CustomEditor(typeof(SkeletonAO))]
+    public class SkeletonAOEditor : Editor
+    {
+        SerializedProperty bones;
+        SerializedProperty joints;
+        SerializedProperty defaultJointRadius;
+
+        private void OnEnable()
+        {
+            bones = serializedObject.FindProperty(nameof(bones));
+            joints = serializedObject.FindProperty(nameof(joints));
+            defaultJointRadius = serializedObject.FindProperty(nameof(defaultJointRadius));
+        }
+
+        public override void OnInspectorGUI()
+        {
+            base.OnInspectorGUI();
+
+            serializedObject.Update();
+            GUILayout.Space(14);
+            GUILayout.Label("BONES:", EditorStyles.boldLabel);
+            for(int i = 0; i < bones.arraySize; i++)
+            {
+                using (new GUILayout.HorizontalScope())
+                {
+                    var elem = bones.GetArrayElementAtIndex(i);
+                    var joint0 = elem.FindPropertyRelative("joint0");
+                    var joint1 = elem.FindPropertyRelative("joint1");
+                    var depth = elem.FindPropertyRelative("depth");
+                    int indent = depth.intValue * 12;
+                    GUILayout.Space(indent);
+
+                    joint0.objectReferenceValue = EditorGUILayout.ObjectField(joint0.objectReferenceValue, typeof(Transform), true, GUILayout.Width(EditorGUIUtility.currentViewWidth * 0.5f - indent));
+                    GUILayout.Label("->", GUILayout.Width(20));
+                    joint1.objectReferenceValue = EditorGUILayout.ObjectField(joint1.objectReferenceValue, typeof(Transform), true);
+                    //EditorGUILayout.ObjectField(joint1);
+                    if(GUILayout.Button("X", GUILayout.Width(24)))
+                    {
+                        bones.DeleteArrayElementAtIndex(i);
+                    }
+                }
+            }
+            if (GUILayout.Button("ADD"))
+            {
+                bones.InsertArrayElementAtIndex(bones.arraySize);
+                var elem = bones.GetArrayElementAtIndex(bones.arraySize - 1);
+                var joint0 = elem.FindPropertyRelative("joint0");
+                var joint1 = elem.FindPropertyRelative("joint1");
+                var depth = elem.FindPropertyRelative("depth");
+                joint0.objectReferenceValue = null;
+                joint1.objectReferenceValue = null;
+                depth.intValue = 0;
+            }
+
+            GUILayout.Space(14);
+            GUILayout.Label("JOINTS:", EditorStyles.boldLabel);
+            float labelWidth = EditorGUIUtility.labelWidth;
+            for (int i = 0; i < joints.arraySize; i++)
+            {
+                using (new GUILayout.HorizontalScope())
+                {
+                    var elem = joints.GetArrayElementAtIndex(i);
+                    var transform = elem.FindPropertyRelative("transform");
+                    var radius = elem.FindPropertyRelative("radius");
+                    var displacement = elem.FindPropertyRelative("displacement");
+
+                    transform.objectReferenceValue = EditorGUILayout.ObjectField(transform.objectReferenceValue, typeof(Transform), true, GUILayout.MaxWidth(EditorGUIUtility.currentViewWidth * 0.3f));
+
+                    GUILayout.Space(10);
+                    EditorGUIUtility.labelWidth = 50f;
+                    radius.floatValue = EditorGUILayout.FloatField("Radius:", radius.floatValue, GUILayout.MaxWidth(80));
+
+                    GUILayout.Space(10);
+                    EditorGUIUtility.labelWidth = 90f;
+                    displacement.vector3Value = EditorGUILayout.Vector3Field("Displacement:", displacement.vector3Value);
+
+                    if (GUILayout.Button("X", GUILayout.Width(24)))
+                    {
+                        joints.DeleteArrayElementAtIndex(i);
+                    }
+                }
+            }
+            if (GUILayout.Button("ADD"))
+            {
+                joints.InsertArrayElementAtIndex(joints.arraySize);
+                var elem = joints.GetArrayElementAtIndex(joints.arraySize - 1);
+                var transform = elem.FindPropertyRelative("transform");
+                var radius = elem.FindPropertyRelative("radius");
+                var displacement = elem.FindPropertyRelative("displacement");
+                transform.objectReferenceValue = null;
+                radius.floatValue = defaultJointRadius.floatValue;
+                displacement.vector3Value = Vector3.zero;
+            }
+
+
+            EditorGUIUtility.labelWidth = labelWidth;
+
+            serializedObject.ApplyModifiedProperties();
+        }
+    }
+#endif
 }
