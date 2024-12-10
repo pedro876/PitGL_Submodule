@@ -119,6 +119,125 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &180366690
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 180366691}
+  - component: {fileID: 180366692}
+  m_Layer: 0
+  m_Name: Skeleton
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &180366691
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 180366690}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1449635923}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &180366692
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 180366690}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 289d57575430e034594d9be63334c120, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  boneMeshFilter: {fileID: -5754084199372789682, guid: 01970508dac9b0d4686868ac502cf3b7, type: 3}
+  minBoneLength: 0.25
+  defaultJointRadius: 0.1
+  rigRoot: {fileID: 1449635924}
+  bones:
+  - joint0: {fileID: 1449635925}
+    joint1: {fileID: 1449635927}
+  - joint0: {fileID: 1449635927}
+    joint1: {fileID: 1449635930}
+  - joint0: {fileID: 1449635930}
+    joint1: {fileID: 1449635931}
+  - joint0: {fileID: 1449635927}
+    joint1: {fileID: 1449635953}
+  - joint0: {fileID: 1449635927}
+    joint1: {fileID: 1449635957}
+  - joint0: {fileID: 1449635957}
+    joint1: {fileID: 1449635958}
+  - joint0: {fileID: 1449635979}
+    joint1: {fileID: 1449635980}
+  - joint0: {fileID: 1449635980}
+    joint1: {fileID: 1449635981}
+  - joint0: {fileID: 1449635981}
+    joint1: {fileID: 1449635983}
+  - joint0: {fileID: 1449635984}
+    joint1: {fileID: 1449635985}
+  - joint0: {fileID: 1449635985}
+    joint1: {fileID: 1449635986}
+  - joint0: {fileID: 1449635986}
+    joint1: {fileID: 1449635988}
+  joints:
+  - transform: {fileID: 1449635925}
+    displacement: {x: 0, y: 0, z: 0}
+    radius: 0.17
+  - transform: {fileID: 1449635927}
+    displacement: {x: 0, y: 0.07, z: 0.06}
+    radius: 0.14
+  - transform: {fileID: 1449635930}
+    displacement: {x: 0, y: 0, z: 0}
+    radius: 0.07
+  - transform: {fileID: 1449635931}
+    displacement: {x: 0, y: 0.1, z: 0}
+    radius: 0.05
+  - transform: {fileID: 1449635953}
+    displacement: {x: 0, y: 0.09, z: 0}
+    radius: 0.1
+  - transform: {fileID: 1449635957}
+    displacement: {x: 0, y: 0, z: 0}
+    radius: 0.07
+  - transform: {fileID: 1449635958}
+    displacement: {x: 0, y: 0.1, z: 0}
+    radius: 0.05
+  - transform: {fileID: 1449635979}
+    displacement: {x: 0, y: 0, z: 0}
+    radius: 0.12
+  - transform: {fileID: 1449635980}
+    displacement: {x: 0, y: 0, z: 0}
+    radius: 0.07
+  - transform: {fileID: 1449635981}
+    displacement: {x: 0, y: 0.03, z: -0.04}
+    radius: 0.07
+  - transform: {fileID: 1449635983}
+    displacement: {x: 0, y: -0.06, z: -0.01}
+    radius: 0.05
+  - transform: {fileID: 1449635984}
+    displacement: {x: 0, y: 0, z: 0}
+    radius: 0.1
+  - transform: {fileID: 1449635985}
+    displacement: {x: 0, y: 0, z: 0}
+    radius: 0.07
+  - transform: {fileID: 1449635986}
+    displacement: {x: 0, y: 0.03, z: -0.04}
+    radius: 0.07
+  - transform: {fileID: 1449635988}
+    displacement: {x: 0, y: -0.06, z: -0.01}
+    radius: 0.05
 --- !u!1 &336620034
 GameObject:
   m_ObjectHideFlags: 0
@@ -766,108 +885,32 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: -3090848061168836670, guid: b1ba0c079b3553441bd46972fae8288b, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: b1ba0c079b3553441bd46972fae8288b, type: 3}
       propertyPath: m_Name
       value: Y Bot
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 1082271958561512970, guid: b1ba0c079b3553441bd46972fae8288b, type: 3}
+    m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: -8679921383154817045, guid: b1ba0c079b3553441bd46972fae8288b, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 1449635924}
+      addedObject: {fileID: 180366691}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b1ba0c079b3553441bd46972fae8288b, type: 3}
---- !u!1 &1449635923 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 1082271958561512970, guid: b1ba0c079b3553441bd46972fae8288b, type: 3}
+--- !u!4 &1449635923 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: b1ba0c079b3553441bd46972fae8288b, type: 3}
   m_PrefabInstance: {fileID: 1449635922}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &1449635924
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
+--- !u!4 &1449635924 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 5465940246521907071, guid: b1ba0c079b3553441bd46972fae8288b, type: 3}
+  m_PrefabInstance: {fileID: 1449635922}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1449635923}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 289d57575430e034594d9be63334c120, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  minBoneLength: 0.25
-  defaultJointRadius: 0.1
-  bones:
-  - joint0: {fileID: 1449635925}
-    joint1: {fileID: 1449635927}
-  - joint0: {fileID: 1449635927}
-    joint1: {fileID: 1449635930}
-  - joint0: {fileID: 1449635930}
-    joint1: {fileID: 1449635931}
-  - joint0: {fileID: 1449635927}
-    joint1: {fileID: 1449635953}
-  - joint0: {fileID: 1449635927}
-    joint1: {fileID: 1449635957}
-  - joint0: {fileID: 1449635957}
-    joint1: {fileID: 1449635958}
-  - joint0: {fileID: 1449635979}
-    joint1: {fileID: 1449635980}
-  - joint0: {fileID: 1449635980}
-    joint1: {fileID: 1449635981}
-  - joint0: {fileID: 1449635981}
-    joint1: {fileID: 1449635983}
-  - joint0: {fileID: 1449635984}
-    joint1: {fileID: 1449635985}
-  - joint0: {fileID: 1449635985}
-    joint1: {fileID: 1449635986}
-  - joint0: {fileID: 1449635986}
-    joint1: {fileID: 1449635988}
-  joints:
-  - transform: {fileID: 1449635925}
-    displacement: {x: 0, y: 0, z: 0}
-    radius: 0.17
-  - transform: {fileID: 1449635927}
-    displacement: {x: 0, y: 0.02, z: 0.06}
-    radius: 0.14
-  - transform: {fileID: 1449635930}
-    displacement: {x: 0, y: 0, z: 0}
-    radius: 0.07
-  - transform: {fileID: 1449635931}
-    displacement: {x: 0, y: 0.1, z: 0}
-    radius: 0.05
-  - transform: {fileID: 1449635953}
-    displacement: {x: 0, y: 0.09, z: 0}
-    radius: 0.1
-  - transform: {fileID: 1449635957}
-    displacement: {x: 0, y: 0, z: 0}
-    radius: 0.07
-  - transform: {fileID: 1449635958}
-    displacement: {x: 0, y: 0.1, z: 0}
-    radius: 0.05
-  - transform: {fileID: 1449635979}
-    displacement: {x: 0, y: 0, z: 0}
-    radius: 0.12
-  - transform: {fileID: 1449635980}
-    displacement: {x: 0, y: 0, z: 0}
-    radius: 0.07
-  - transform: {fileID: 1449635981}
-    displacement: {x: 0, y: 0.03, z: -0.04}
-    radius: 0.07
-  - transform: {fileID: 1449635983}
-    displacement: {x: 0, y: -0.06, z: -0.01}
-    radius: 0.05
-  - transform: {fileID: 1449635984}
-    displacement: {x: 0, y: 0, z: 0}
-    radius: 0.1
-  - transform: {fileID: 1449635985}
-    displacement: {x: 0, y: 0, z: 0}
-    radius: 0.07
-  - transform: {fileID: 1449635986}
-    displacement: {x: 0, y: 0.03, z: -0.04}
-    radius: 0.07
-  - transform: {fileID: 1449635988}
-    displacement: {x: 0, y: -0.06, z: -0.01}
-    radius: 0.05
 --- !u!4 &1449635925 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -3480699329000672020, guid: b1ba0c079b3553441bd46972fae8288b, type: 3}
