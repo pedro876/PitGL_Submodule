@@ -164,9 +164,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   boneMeshFilter: {fileID: -5754084199372789682, guid: 01970508dac9b0d4686868ac502cf3b7, type: 3}
-  minBoneLength: 0.1
   defaultJointRadius: 0.1
-  maxSkeletonDepth: 5
   rigRoot: {fileID: 1449635924}
   bones:
   - joint0: {fileID: 1449635925}
@@ -193,9 +191,6 @@ MonoBehaviour:
   - joint0: {fileID: 1449635942}
     joint1: {fileID: 1449635953}
     depth: 3
-  - joint0: {fileID: 1449635953}
-    joint1: {fileID: 1449635941}
-    depth: 4
   - joint0: {fileID: 1449635927}
     joint1: {fileID: 1449635940}
     depth: 2
@@ -228,74 +223,74 @@ MonoBehaviour:
     depth: 2
   joints:
   - transform: {fileID: 1449635925}
-    displacement: {x: 0, y: 0, z: 0}
-    radius: 0.1
+    displacement: {x: 0, y: -0.11, z: 0}
+    radius: 0.18
   - transform: {fileID: 1449635945}
-    displacement: {x: 0, y: 0, z: 0}
-    radius: 0.1
+    displacement: {x: 0, y: 0, z: 0.04}
+    radius: 0.11
   - transform: {fileID: 1449635927}
-    displacement: {x: 0, y: 0, z: 0}
-    radius: 0.1
+    displacement: {x: 0, y: 0, z: 0.05}
+    radius: 0.17
   - transform: {fileID: 1449635944}
     displacement: {x: 0, y: 0, z: 0}
     radius: 0.1
   - transform: {fileID: 1449635943}
     displacement: {x: 0, y: 0, z: 0}
-    radius: 0.1
+    radius: 0.08
   - transform: {fileID: 1449635930}
     displacement: {x: 0, y: 0, z: 0}
-    radius: 0.1
+    radius: 0.06
   - transform: {fileID: 1449635931}
-    displacement: {x: 0, y: 0, z: 0}
-    radius: 0.1
+    displacement: {x: 0, y: 0.1, z: 0}
+    radius: 0.05
   - transform: {fileID: 1449635942}
-    displacement: {x: 0, y: 0, z: 0}
-    radius: 0.1
+    displacement: {x: 0, y: 0.04, z: 0}
+    radius: 0.05
   - transform: {fileID: 1449635953}
-    displacement: {x: 0, y: 0, z: 0}
-    radius: 0.1
-  - transform: {fileID: 1449635941}
-    displacement: {x: 0, y: 0, z: 0}
-    radius: 0.1
+    displacement: {x: 0, y: 0.07, z: 0}
+    radius: 0.11
   - transform: {fileID: 1449635940}
     displacement: {x: 0, y: 0, z: 0}
     radius: 0.1
   - transform: {fileID: 1449635939}
     displacement: {x: 0, y: 0, z: 0}
-    radius: 0.1
+    radius: 0.08
   - transform: {fileID: 1449635957}
     displacement: {x: 0, y: 0, z: 0}
-    radius: 0.1
+    radius: 0.06
   - transform: {fileID: 1449635958}
-    displacement: {x: 0, y: 0, z: 0}
-    radius: 0.1
+    displacement: {x: 0, y: 0.1, z: 0}
+    radius: 0.05
   - transform: {fileID: 1449635979}
     displacement: {x: 0, y: 0, z: 0}
     radius: 0.1
   - transform: {fileID: 1449635980}
     displacement: {x: 0, y: 0, z: 0}
-    radius: 0.1
+    radius: 0.08
   - transform: {fileID: 1449635981}
-    displacement: {x: 0, y: 0, z: 0}
-    radius: 0.1
+    displacement: {x: 0, y: 0.02, z: -0.04}
+    radius: 0.06
   - transform: {fileID: 1449635938}
-    displacement: {x: 0, y: 0, z: 0}
-    radius: 0.1
-  - transform: {fileID: 1449635983}
-    displacement: {x: 0, y: 0, z: 0}
-    radius: 0.1
+    displacement: {x: 0, y: 0.05, z: -0.02}
+    radius: 0.05
   - transform: {fileID: 1449635984}
     displacement: {x: 0, y: 0, z: 0}
     radius: 0.1
   - transform: {fileID: 1449635985}
     displacement: {x: 0, y: 0, z: 0}
-    radius: 0.1
+    radius: 0.08
   - transform: {fileID: 1449635986}
-    displacement: {x: 0, y: 0, z: 0}
-    radius: 0.1
+    displacement: {x: 0, y: 0.02, z: -0.04}
+    radius: 0.06
   - transform: {fileID: 1449635937}
-    displacement: {x: 0, y: 0, z: 0}
-    radius: 0.1
+    displacement: {x: 0, y: 0.05, z: -0.02}
+    radius: 0.05
+  boneExclusions:
+  - End
+  minBoneLength: 0.09
+  maxSkeletonDepth: 5
+  selectedBone: -1
+  selectedJoint: 16
 --- !u!1 &336620034
 GameObject:
   m_ObjectHideFlags: 0
@@ -1009,11 +1004,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: -6803169544883306252, guid: b1ba0c079b3553441bd46972fae8288b, type: 3}
   m_PrefabInstance: {fileID: 1449635922}
   m_PrefabAsset: {fileID: 0}
---- !u!4 &1449635941 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 8700783698680967558, guid: b1ba0c079b3553441bd46972fae8288b, type: 3}
-  m_PrefabInstance: {fileID: 1449635922}
-  m_PrefabAsset: {fileID: 0}
 --- !u!4 &1449635942 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 6515712193588681746, guid: b1ba0c079b3553441bd46972fae8288b, type: 3}
@@ -1062,11 +1052,6 @@ Transform:
 --- !u!4 &1449635981 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 608321761475470972, guid: b1ba0c079b3553441bd46972fae8288b, type: 3}
-  m_PrefabInstance: {fileID: 1449635922}
-  m_PrefabAsset: {fileID: 0}
---- !u!4 &1449635983 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 8044669281949152778, guid: b1ba0c079b3553441bd46972fae8288b, type: 3}
   m_PrefabInstance: {fileID: 1449635922}
   m_PrefabAsset: {fileID: 0}
 --- !u!4 &1449635984 stripped

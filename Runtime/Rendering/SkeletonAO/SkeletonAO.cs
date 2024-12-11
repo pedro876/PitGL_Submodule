@@ -26,94 +26,126 @@ namespace PitGL
 
         [SerializeField, ForceAsset("Runtime/Rendering/SkeletonAO/CapsuleBoneBase.fbx")] MeshFilter boneMeshFilter;
 
-        [SerializeField] float minBoneLength = 0.1f;
         [SerializeField] float defaultJointRadius = 0.1f;
-        [SerializeField] int maxSkeletonDepth = 10;
         [SerializeField] Transform rigRoot;
         [SerializeField, HideInInspector] Bone[] bones;
         [SerializeField, HideInInspector] Joint[] joints;
 
+#if UNITY_EDITOR
+        [Header("Editor only")]
+        [Tooltip("Any bone whose name contains any of the defined strings will be discarded")]
+        [SerializeField] List<string> boneExclusions;
+        [SerializeField] float minBoneLength = 0.1f;
+        [SerializeField] int maxSkeletonDepth = 10;
+        [HideInInspector, SerializeField] int selectedBone = -1;
+        [HideInInspector, SerializeField] int selectedJoint = -1;
+#endif
+
         private Mesh skeletonMesh;
 
-        private void Start()
+        #region MESH GENERATION
+
+        [ContextMenu("Generate mesh from skeleton")]
+        public void GenerateMeshFromSkeleton()
         {
-            
-        }
+            CombineInstance[] instances = new CombineInstance[bones.Length];
 
-        private void OnDrawGizmosSelected()
-        {
-            if (bones == null) return;
-            if (bones.Length == 0 ) return;
+            Mesh baseMesh = boneMeshFilter.sharedMesh;
 
-            Gizmos.color = Color.red;
-            Gizmos.matrix = transform.localToWorldMatrix;
-            if (skeletonMesh != null)
-            {
-                Gizmos.DrawMesh(skeletonMesh);
-            }
-
-           // Gizmos.DrawMesh(boneMeshFilter.sharedMesh);
-
-            Dictionary<Transform, Joint> dict = new Dictionary<Transform, Joint>();
-            if(joints != null)
+            // Initialize bone to joint dictionary
+            Dictionary<Transform, Joint> jointsDict = new Dictionary<Transform, Joint>();
+            if (joints != null)
             {
                 for (int i = 0; i < joints.Length; i++)
                 {
-                    if (joints[i] == null) continue;
-                    if (joints[i].transform == null) continue;
-                    dict[joints[i].transform] = joints[i];
+                    jointsDict.Add(joints[i].transform, joints[i]);
                 }
             }
-            
 
             for (int i = 0; i < bones.Length; i++)
             {
+                if (!jointsDict.ContainsKey(bones[i].joint0)) jointsDict.Add(bones[i].joint0, new Joint() { transform = bones[i].joint0, displacement = Vector3.zero, radius = defaultJointRadius });
+                if (!jointsDict.ContainsKey(bones[i].joint1)) jointsDict.Add(bones[i].joint1, new Joint() { transform = bones[i].joint1, displacement = Vector3.zero, radius = defaultJointRadius });
+            }
+
+            // Create bone meshes
+            for (int i = 0; i < bones.Length; i++)
+            {
+
                 Bone bone = bones[i];
-                if (bone == null) continue;
-                if(bone.joint0 == null) continue;
-                if(bone.joint1 == null) continue;
+                Joint joint0 = jointsDict[bones[i].joint0];
+                Joint joint1 = jointsDict[bones[i].joint1];
 
-                Vector3 displacement0 = Vector3.zero;
-                Vector3 displacement1 = Vector3.zero;
-                float radius0 = defaultJointRadius;
-                float radius1 = defaultJointRadius;
+                Vector3[] vertices = new Vector3[baseMesh.vertices.Length];
+                Vector3[] normals = new Vector3[baseMesh.normals.Length];
+                int[] triangles = new int[baseMesh.triangles.Length];
+                baseMesh.vertices.CopyTo(vertices, 0);
+                baseMesh.normals.CopyTo(normals, 0);
+                baseMesh.triangles.CopyTo(triangles, 0);
 
-                if(dict.TryGetValue(bone.joint0, out Joint joint0))
+                Vector3 joint0Pos = joint0.transform.TransformPoint(joint0.displacement);
+                Vector3 joint1Pos = joint1.transform.TransformPoint(joint1.displacement);
+
+                Quaternion rot = Quaternion.LookRotation(joint1Pos - joint0Pos) * Quaternion.Euler(90f, 0f, 0f);
+
+                Matrix4x4 joint0matrix = Matrix4x4.TRS(joint0Pos, rot, Vector3.one * joint0.radius);
+                Matrix4x4 joint1matrix = Matrix4x4.TRS(joint1Pos, rot, Vector3.one * joint1.radius);
+
+                //Scale vertices to joint radiuses
+                for (int v = 0; v < vertices.Length; v++)
                 {
-                    displacement0 = joint0.displacement;
-                    radius0 = joint0.radius;
+                    bool isJoint0 = vertices[v].y < 0.1f;
+
+                    if (isJoint0)
+                    {
+                        vertices[v] = joint0matrix.MultiplyPoint(vertices[v]);
+                    }
+                    else
+                    {
+                        vertices[v].y -= 1f;
+                        vertices[v] = joint1matrix.MultiplyPoint(vertices[v]);
+                    }
+
+                    vertices[v] = transform.InverseTransformPoint(vertices[v]);
                 }
 
-                if (dict.TryGetValue(bone.joint1, out Joint joint1))
+                for (int n = 0; n < normals.Length; n++)
                 {
-                    displacement1 = joint1.displacement;
-                    radius1 = joint1.radius;
+                    normals[n] = bone.joint0.TransformDirection(normals[n]);
+                    normals[n] = transform.InverseTransformDirection(normals[n]);
                 }
 
-                Vector3 posJoint0 = displacement0;
-                Vector3 posJoint1 = bone.joint0.InverseTransformPoint(bone.joint1.TransformPoint(displacement1));
+                Mesh mesh = new Mesh();
+                mesh.vertices = vertices;
+                mesh.normals = normals;
+                mesh.triangles = triangles;
+                instances[i].mesh = mesh;
+            }
 
-                Gizmos.matrix = bone.joint0.localToWorldMatrix;
-                Gizmos.DrawWireSphere(posJoint0, radius0);
-                Gizmos.DrawWireSphere(posJoint1, radius1);
+            // Combine meshes
+            skeletonMesh = new Mesh();
+            skeletonMesh.CombineMeshes(instances, true, false, false);
+            skeletonMesh.RecalculateBounds();
+        }
 
-
-                //Gizmos.DrawLine(Vector3.right * bone.radius0, bone.joint0.InverseTransformPoint(bone.joint1.TransformPoint(Vector3.right * bone.radius1)));
-                //Gizmos.DrawLine(Vector3.left * bone.radius0, bone.joint0.InverseTransformPoint(bone.joint1.TransformPoint(Vector3.left * bone.radius1)));
-                //Gizmos.DrawLine(Vector3.forward * bone.radius0, bone.joint0.InverseTransformPoint(bone.joint1.TransformPoint(Vector3.forward * bone.radius1)));
-                //Gizmos.DrawLine(Vector3.back * bone.radius0, bone.joint0.InverseTransformPoint(bone.joint1.TransformPoint(Vector3.back * bone.radius1)));
-                //Gizmos.DrawLine(posJoint0, posJoint1);
-                Gizmos.matrix = Matrix4x4.identity;
-                Gizmos.DrawLine(bone.joint0.TransformPoint(displacement0 + Vector3.right * radius0), bone.joint1.TransformPoint(displacement1 + Vector3.right * radius1));
-                Gizmos.DrawLine(bone.joint0.TransformPoint(displacement0 + Vector3.left * radius0), bone.joint1.TransformPoint(displacement1 + Vector3.left * radius1));
-                Gizmos.DrawLine(bone.joint0.TransformPoint(displacement0 + Vector3.forward * radius0), bone.joint1.TransformPoint(displacement1 + Vector3.forward * radius1));
-                Gizmos.DrawLine(bone.joint0.TransformPoint(displacement0 + Vector3.back * radius0), bone.joint1.TransformPoint(displacement1 + Vector3.back * radius1));
-                
+        [ContextMenu("Clear skeleton mesh")]
+        public void ClearSkeletonMesh()
+        {
+            if (skeletonMesh != null)
+            {
+                DestroyImmediate(skeletonMesh);
+                skeletonMesh = null;
             }
         }
 
+        #endregion
+
+        #region EDITOR ONLY
+
+#if UNITY_EDITOR
+
         [ContextMenu("Deduct skeleton from hierarchy")]
-        private void DeductSekeletonFromHierarchy()
+        public void DeductSekeletonFromHierarchy()
         {
             List<Bone> boneList = new List<Bone>();
             Dictionary<Transform, Joint> jointsDict = new Dictionary<Transform, Joint>();
@@ -153,6 +185,21 @@ namespace PitGL
                 {
                     float boneLength = Vector3.Distance(joint0.position, joint1.position);
                     bool isFeashible = boneLength >= minBoneLength;
+
+                    if(boneExclusions != null)
+                    {
+                        for (int i = 0; i < boneExclusions.Count; i++)
+                        {
+                            if (joint0.gameObject.name.Contains(boneExclusions[i], System.StringComparison.InvariantCultureIgnoreCase) ||
+                                joint1.gameObject.name.Contains(boneExclusions[i], System.StringComparison.InvariantCultureIgnoreCase))
+                            {
+                                isFeashible = false;
+                                break;
+                            }
+                        }
+                    }
+                    
+
                     if(isFeashible)
                     {
                         Bone bone = new Bone()
@@ -187,107 +234,103 @@ namespace PitGL
                 joints[jointIndex++] = joint;
             }
 
-#if UNITY_EDITOR
             UnityEditor.EditorUtility.SetDirty(this);
-#endif
         }
 
-
-        [ContextMenu("Generate mesh from skeleton")]
-        private void GenerateMeshFromSkeleton()
+        private void OnDrawGizmosSelected()
         {
-            CombineInstance[] instances = new CombineInstance[bones.Length];
 
-            Mesh baseMesh = boneMeshFilter.sharedMesh;
+            if (bones == null) return;
+            if (bones.Length == 0) return;
 
-            // Initialize bone to joint dictionary
-            Dictionary<Transform, Joint> jointsDict = new Dictionary<Transform, Joint>();
+            Gizmos.color = Color.red;
+            Gizmos.matrix = transform.localToWorldMatrix;
+            if (skeletonMesh != null)
+            {
+                Gizmos.DrawMesh(skeletonMesh);
+            }
+
+            // Gizmos.DrawMesh(boneMeshFilter.sharedMesh);
+
+            var dict = new Dictionary<Transform, Joint>();
             if (joints != null)
             {
                 for (int i = 0; i < joints.Length; i++)
                 {
-                    jointsDict.Add(joints[i].transform, joints[i]);
+                    if (joints[i] == null) continue;
+                    if (joints[i].transform == null) continue;
+                    dict[joints[i].transform] = joints[i];
                 }
             }
 
-            for(int i = 0; i < bones.Length; i++)
+            Bone blueBone = selectedBone >= 0 && selectedBone < bones.Length ? bones[selectedBone] : null;
+            Transform blueJoint0, blueJoint1;
+
+            if(blueBone != null)
             {
-                if (!jointsDict.ContainsKey(bones[i].joint0)) jointsDict.Add(bones[i].joint0, new Joint() { transform = bones[i].joint0, displacement = Vector3.zero, radius = defaultJointRadius });
-                if (!jointsDict.ContainsKey(bones[i].joint1)) jointsDict.Add(bones[i].joint1, new Joint() { transform = bones[i].joint1, displacement = Vector3.zero, radius = defaultJointRadius });
+                blueJoint0 = blueBone.joint0;
+                blueJoint1 = blueBone.joint1;
+            }
+            else
+            {
+                blueJoint0 = selectedJoint >= 0 && selectedJoint < joints.Length ? joints[selectedJoint].transform : null;
+                blueJoint1 = blueJoint0;
             }
 
-            // Create bone meshes
             for (int i = 0; i < bones.Length; i++)
             {
-
                 Bone bone = bones[i];
-                Joint joint0 = jointsDict[bones[i].joint0];
-                Joint joint1 = jointsDict[bones[i].joint1];
+                if (bone == null) continue;
+                if (bone.joint0 == null) continue;
+                if (bone.joint1 == null) continue;
 
-                Vector3[] vertices = new Vector3[baseMesh.vertices.Length];
-                Vector3[] normals = new Vector3[baseMesh.normals.Length];
-                int[] triangles = new int[baseMesh.triangles.Length];
-                baseMesh.vertices.CopyTo(vertices, 0);
-                baseMesh.normals.CopyTo(normals, 0);
-                baseMesh.triangles.CopyTo(triangles, 0);
+                Vector3 displacement0 = Vector3.zero;
+                Vector3 displacement1 = Vector3.zero;
+                float radius0 = defaultJointRadius;
+                float radius1 = defaultJointRadius;
 
-                Vector3 joint0Pos = joint0.transform.TransformPoint(joint0.displacement);
-                Vector3 joint1Pos = joint1.transform.TransformPoint(joint1.displacement);
-
-                Quaternion rot = Quaternion.LookRotation(joint1Pos - joint0Pos) * Quaternion.Euler(90f, 0f, 0f);
-
-                Matrix4x4 joint0matrix = Matrix4x4.TRS(joint0Pos, rot, Vector3.one * joint0.radius);
-                Matrix4x4 joint1matrix = Matrix4x4.TRS(joint1Pos, rot, Vector3.one * joint1.radius);
-
-                //Scale vertices to joint radiuses
-                for(int v = 0; v < vertices.Length; v++)
+                if (dict.TryGetValue(bone.joint0, out Joint joint0))
                 {
-                    bool isJoint0 = vertices[v].y < 0.1f;
-
-                    if (isJoint0)
-                    {
-                        vertices[v] = joint0matrix.MultiplyPoint(vertices[v]);
-                    }
-                    else
-                    {
-                        vertices[v].y -= 1f;
-                        vertices[v] = joint1matrix.MultiplyPoint(vertices[v]);
-                    }
-                    
-                    vertices[v] = transform.InverseTransformPoint(vertices[v]);
+                    displacement0 = joint0.displacement;
+                    radius0 = joint0.radius;
                 }
 
-                for (int n = 0; n < normals.Length; n++)
+                if (dict.TryGetValue(bone.joint1, out Joint joint1))
                 {
-                    normals[n] = bone.joint0.TransformDirection(normals[n]);
-                    normals[n] = transform.InverseTransformDirection(normals[n]);
+                    displacement1 = joint1.displacement;
+                    radius1 = joint1.radius;
                 }
-                
-                Mesh mesh = new Mesh();
-                mesh.vertices = vertices;
-                mesh.normals = normals;
-                mesh.triangles = triangles;
-                instances[i].mesh = mesh;
-            }
 
-            // Combine meshes
-            skeletonMesh = new Mesh();
-            skeletonMesh.CombineMeshes(instances, true, false, false);
-            skeletonMesh.RecalculateBounds();
-        }
+                Vector3 posJoint0 = displacement0;
+                Vector3 posJoint1 = bone.joint0.InverseTransformPoint(bone.joint1.TransformPoint(displacement1));
 
-        [ContextMenu("Clear skeleton mesh")]
-        private void ClearSkeletonMesh()
-        {
-            if(skeletonMesh != null)
-            {
-                DestroyImmediate(skeletonMesh);
-                skeletonMesh = null;
+                Gizmos.matrix = bone.joint0.localToWorldMatrix;
+                Gizmos.color = (blueJoint0 == bone.joint0 || blueJoint1 == bone.joint0) ? Color.blue : Color.red;
+                Gizmos.DrawWireSphere(posJoint0, radius0);
+                Gizmos.color = (blueJoint0 == bone.joint1 || blueJoint1 == bone.joint1) ? Color.blue : Color.red;
+                Gizmos.DrawWireSphere(posJoint1, radius1);
+
+
+                //Gizmos.DrawLine(Vector3.right * bone.radius0, bone.joint0.InverseTransformPoint(bone.joint1.TransformPoint(Vector3.right * bone.radius1)));
+                //Gizmos.DrawLine(Vector3.left * bone.radius0, bone.joint0.InverseTransformPoint(bone.joint1.TransformPoint(Vector3.left * bone.radius1)));
+                //Gizmos.DrawLine(Vector3.forward * bone.radius0, bone.joint0.InverseTransformPoint(bone.joint1.TransformPoint(Vector3.forward * bone.radius1)));
+                //Gizmos.DrawLine(Vector3.back * bone.radius0, bone.joint0.InverseTransformPoint(bone.joint1.TransformPoint(Vector3.back * bone.radius1)));
+                //Gizmos.DrawLine(posJoint0, posJoint1);
+                Gizmos.color = bone == blueBone ? Color.blue : Color.red;
+                Gizmos.matrix = Matrix4x4.identity;
+                Gizmos.DrawLine(bone.joint0.TransformPoint(displacement0 + Vector3.right * radius0), bone.joint1.TransformPoint(displacement1 + Vector3.right * radius1));
+                Gizmos.DrawLine(bone.joint0.TransformPoint(displacement0 + Vector3.left * radius0), bone.joint1.TransformPoint(displacement1 + Vector3.left * radius1));
+                Gizmos.DrawLine(bone.joint0.TransformPoint(displacement0 + Vector3.forward * radius0), bone.joint1.TransformPoint(displacement1 + Vector3.forward * radius1));
+                Gizmos.DrawLine(bone.joint0.TransformPoint(displacement0 + Vector3.back * radius0), bone.joint1.TransformPoint(displacement1 + Vector3.back * radius1));
+
             }
-            
         }
+#endif
+
+        #endregion
     }
 
+    #region CUSTOM EDITOR
 #if UNITY_EDITOR
     [CustomEditor(typeof(SkeletonAO))]
     public class SkeletonAOEditor : Editor
@@ -295,12 +338,16 @@ namespace PitGL
         SerializedProperty bones;
         SerializedProperty joints;
         SerializedProperty defaultJointRadius;
+        SerializedProperty selectedBone;
+        SerializedProperty selectedJoint;
 
         private void OnEnable()
         {
             bones = serializedObject.FindProperty(nameof(bones));
             joints = serializedObject.FindProperty(nameof(joints));
             defaultJointRadius = serializedObject.FindProperty(nameof(defaultJointRadius));
+            selectedBone = serializedObject.FindProperty(nameof(selectedBone));
+            selectedJoint = serializedObject.FindProperty(nameof(selectedJoint));
         }
 
         public override void OnInspectorGUI()
@@ -308,6 +355,30 @@ namespace PitGL
             base.OnInspectorGUI();
 
             serializedObject.Update();
+
+
+            {
+                SkeletonAO skeleton = (SkeletonAO)target;
+
+                if (GUILayout.Button("Deduct Sekeleton From Hierarchy"))
+                {
+                    skeleton.DeductSekeletonFromHierarchy();
+                }
+
+                using (new GUILayout.HorizontalScope())
+                {
+                    if (GUILayout.Button("Generate Mesh From Skeleton"))
+                    {
+                        skeleton.GenerateMeshFromSkeleton();
+                    }
+
+                    if (GUILayout.Button("Clear Skeleton Mesh"))
+                    {
+                        skeleton.ClearSkeletonMesh();
+                    }
+                }
+            }
+
             GUILayout.Space(14);
             GUILayout.Label("BONES:", EditorStyles.boldLabel);
             for(int i = 0; i < bones.arraySize; i++)
@@ -318,6 +389,17 @@ namespace PitGL
                     var joint0 = elem.FindPropertyRelative("joint0");
                     var joint1 = elem.FindPropertyRelative("joint1");
                     var depth = elem.FindPropertyRelative("depth");
+
+                    if (GUILayout.Toggle(i == selectedBone.intValue, "", GUILayout.Width(20)))
+                    {
+                        selectedBone.intValue = i;
+                        selectedJoint.intValue = -1;
+                    }
+                    else if(i == selectedBone.intValue)
+                    {
+                        selectedBone.intValue = -1;
+                    }
+
                     int indent = depth.intValue * 12;
                     GUILayout.Space(indent);
 
@@ -355,11 +437,21 @@ namespace PitGL
                     var radius = elem.FindPropertyRelative("radius");
                     var displacement = elem.FindPropertyRelative("displacement");
 
+                    if (GUILayout.Toggle(i == selectedJoint.intValue, "", GUILayout.Width(20)))
+                    {
+                        selectedJoint.intValue = i;
+                        selectedBone.intValue = -1;
+                    }
+                    else if(i == selectedJoint.intValue)
+                    {
+                        selectedJoint.intValue = -1;
+                    }
+
                     transform.objectReferenceValue = EditorGUILayout.ObjectField(transform.objectReferenceValue, typeof(Transform), true, GUILayout.MaxWidth(EditorGUIUtility.currentViewWidth * 0.3f));
 
                     GUILayout.Space(10);
                     EditorGUIUtility.labelWidth = 50f;
-                    radius.floatValue = EditorGUILayout.FloatField("Radius:", radius.floatValue, GUILayout.MaxWidth(80));
+                    radius.floatValue = EditorGUILayout.FloatField("Radius:", radius.floatValue, GUILayout.MaxWidth(100));
 
                     GUILayout.Space(10);
                     EditorGUIUtility.labelWidth = 90f;
@@ -390,4 +482,5 @@ namespace PitGL
         }
     }
 #endif
+    #endregion
 }
